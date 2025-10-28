@@ -39,8 +39,9 @@
                         <p class="text-green-100 text-sm">Kesehatan untuk Semua</p>
                     </div>
                 </div>
-                <button onclick="showProfile()" id="profileBtn" class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                    <span class="text-white text-sm">👤</span>
+                <button onclick="showProfile()" id="profileBtn" class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center overflow-hidden">
+                    <img id="headerProfileImage" class="w-full h-full object-cover hidden" alt="Profile">
+                    <span id="headerProfileContent" class="text-white text-sm">👤</span>
                 </button>
             </div>
         </header>
@@ -121,6 +122,17 @@
                     </div>
                 </div>
 
+                <!-- Upcoming Appointments -->
+                <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100" id="upcomingAppointments">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800">Janji Temu Mendatang</h3>
+                        <button onclick="showAppointment()" class="text-blue-600 text-sm font-medium">Lihat Semua</button>
+                    </div>
+                    <div id="upcomingAppointmentsList">
+                        <!-- Upcoming appointments will be populated by JavaScript -->
+                    </div>
+                </div>
+
                 <!-- Nearby Health Facilities -->
                 <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100">
                     <h3 class="font-semibold text-gray-800 mb-3">Fasilitas Kesehatan Terdekat</h3>
@@ -182,10 +194,10 @@
                             <button onclick="startChat('Dr. Ahmad Wijaya')" class="bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm">
                                 💬 Chat
                             </button>
-                            <button onclick="startCall('Dr. Ahmad Wijaya', '+62-811-2345-6789')" class="bg-blue-600 text-black py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm">
+                            <button onclick="startCall('Dr. Ahmad Wijaya', '+62-811-2345-6789')" class="bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm">
                                 📞 Call
                             </button>
-                            <button onclick="startVideoCall('Dr. Ahmad Wijaya')" class="bg-purple-600 text-black py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors text-sm">
+                            <button onclick="startVideoCall('Dr. Ahmad Wijaya')" class="bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors text-sm">
                                 📹 Video
                             </button>
                         </div>
@@ -216,10 +228,10 @@
                             <button class="bg-gray-300 text-gray-600 py-2 rounded-lg font-medium cursor-not-allowed text-sm">
                                 💬 Sibuk
                             </button>
-                            <button onclick="startCall('Dr. Sari Indah', '+62-812-9876-5432')" class="bg-blue-600 text-black py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm">
+                            <button onclick="startCall('Dr. Sari Indah', '+62-812-9876-5432')" class="bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm">
                                 📞 Call
                             </button>
-                            <button onclick="startVideoCall('Dr. Sari Indah')" class="bg-purple-600 text-black py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors text-sm">
+                            <button onclick="startVideoCall('Dr. Sari Indah')" class="bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors text-sm">
                                 📹 Video
                             </button>
                         </div>
@@ -427,46 +439,68 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                         </svg>
                     </button>
-                    <h2 class="text-xl font-semibold text-gray-800">Buat Janji Temu</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">Janji Temu</h2>
+                    <div class="ml-auto">
+                        <button onclick="showAppointmentHistory()" class="text-blue-600 text-sm font-medium hover:text-blue-700">Lihat Jadwal</button>
+                    </div>
                 </div>
 
-                <form onsubmit="createAppointment(event)" class="space-y-4">
-                    <div>
-                        <label for="appointmentDoctor" class="block text-sm font-medium text-gray-700 mb-2">Pilih Dokter</label>
-                        <select id="appointmentDoctor" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="">Pilih dokter...</option>
-                            <option value="Dr. Ahmad Wijaya">Dr. Ahmad Wijaya - Dokter Umum</option>
-                            <option value="Dr. Sari Indah">Dr. Sari Indah - Dokter Anak</option>
-                            <option value="Dr. Budi Santoso">Dr. Budi Santoso - Dokter Gigi</option>
-                        </select>
-                    </div>
+                <!-- Tab Navigation -->
+                <div class="flex space-x-2 mb-4">
+                    <button onclick="showCreateAppointment()" id="createAppointmentTab" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-medium">Buat Janji</button>
+                    <button onclick="showAppointmentHistory()" id="appointmentHistoryTab" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium">Jadwal Saya</button>
+                </div>
 
-                    <div>
-                        <label for="appointmentDate" class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
-                        <input type="date" id="appointmentDate" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
+                <!-- Create Appointment Form -->
+                <div id="createAppointmentForm">
+                    <form onsubmit="createAppointment(event)" class="space-y-4">
+                        <div>
+                            <label for="appointmentDoctor" class="block text-sm font-medium text-gray-700 mb-2">Pilih Dokter</label>
+                            <select id="appointmentDoctor" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">Pilih dokter...</option>
+                                <option value="Dr. Ahmad Wijaya">Dr. Ahmad Wijaya - Dokter Umum</option>
+                                <option value="Dr. Sari Indah">Dr. Sari Indah - Dokter Anak</option>
+                                <option value="Dr. Budi Santoso">Dr. Budi Santoso - Dokter Gigi</option>
+                            </select>
+                        </div>
 
-                    <div>
-                        <label for="appointmentTime" class="block text-sm font-medium text-gray-700 mb-2">Waktu</label>
-                        <select id="appointmentTime" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="">Pilih waktu...</option>
-                            <option value="08:00">08:00 - 08:30</option>
-                            <option value="08:30">08:30 - 09:00</option>
-                            <option value="09:00">09:00 - 09:30</option>
-                            <option value="09:30">09:30 - 10:00</option>
-                            <option value="10:00">10:00 - 10:30</option>
-                        </select>
-                    </div>
+                        <div>
+                            <label for="appointmentDate" class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                            <input type="date" id="appointmentDate" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
 
-                    <div>
-                        <label for="appointmentComplaint" class="block text-sm font-medium text-gray-700 mb-2">Keluhan</label>
-                        <textarea id="appointmentComplaint" rows="3" placeholder="Jelaskan keluhan Anda..." class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
-                    </div>
+                        <div>
+                            <label for="appointmentTime" class="block text-sm font-medium text-gray-700 mb-2">Waktu</label>
+                            <select id="appointmentTime" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">Pilih waktu...</option>
+                                <option value="08:00">08:00 - 08:30</option>
+                                <option value="08:30">08:30 - 09:00</option>
+                                <option value="09:00">09:00 - 09:30</option>
+                                <option value="09:30">09:30 - 10:00</option>
+                                <option value="10:00">10:00 - 10:30</option>
+                                <option value="14:00">14:00 - 14:30</option>
+                                <option value="14:30">14:30 - 15:00</option>
+                                <option value="15:00">15:00 - 15:30</option>
+                                <option value="15:30">15:30 - 16:00</option>
+                                <option value="16:00">16:00 - 16:30</option>
+                            </select>
+                        </div>
 
-                    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                        Buat Janji Temu
-                    </button>
-                </form>
+                        <div>
+                            <label for="appointmentComplaint" class="block text-sm font-medium text-gray-700 mb-2">Keluhan</label>
+                            <textarea id="appointmentComplaint" rows="3" placeholder="Jelaskan keluhan Anda..." class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                            Buat Janji Temu
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Appointment History -->
+                <div id="appointmentHistoryList" class="hidden space-y-3">
+                    <!-- Appointment items will be populated by JavaScript -->
+                </div>
             </div>
 
             <!-- Health Record Screen -->
@@ -663,7 +697,7 @@
                             <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                             <span class="ml-2 text-sm text-gray-600">Ingat saya</span>
                         </label>
-                        <button type="button" class="text-sm text-green-600 hover:text-green-700">Lupa password?</button>
+                        <button type="button" onclick="showForgotPassword()" class="text-sm text-green-600 hover:text-green-700">Lupa password?</button>
                     </div>
 
                     <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors">
@@ -988,11 +1022,11 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <p class="text-blue-100 text-sm">Total Transaksi</p>
-                            <p class="text-xl font-bold">Rp 275.000</p>
+                            <p class="text-xl font-bold" id="monthlyTotal">Rp 0</p>
                         </div>
                         <div>
                             <p class="text-blue-100 text-sm">Jumlah Transaksi</p>
-                            <p class="text-xl font-bold">8</p>
+                            <p class="text-xl font-bold" id="monthlyCount">0</p>
                         </div>
                     </div>
                 </div>
@@ -1000,6 +1034,71 @@
                 <!-- Transaction List -->
                 <div id="transactionList" class="space-y-3">
                     <!-- Transactions will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Transaction Detail Screen -->
+            <div id="transactionDetailScreen" class="hidden p-4 space-y-4">
+                <div class="flex items-center space-x-3 mb-4">
+                    <button onclick="showTransactionHistory()" class="text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-semibold text-gray-800">Detail Transaksi</h2>
+                </div>
+
+                <!-- Transaction Info -->
+                <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-xl" id="transactionDetailIcon">
+                                💊
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800" id="transactionDetailTitle">Detail Transaksi</h3>
+                                <p class="text-gray-500 text-sm" id="transactionDetailDate">15 Des 2024</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-green-600" id="transactionDetailAmount">Rp 30.000</p>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium" id="transactionDetailStatus">Selesai</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-gray-500 text-sm">ID Transaksi</p>
+                                <p class="font-medium" id="transactionDetailId">#TXN001</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Metode Pembayaran</p>
+                                <p class="font-medium" id="transactionDetailPayment">Transfer Bank</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Details Content -->
+                <div id="transactionDetailContent">
+                    <!-- Content will be populated by JavaScript based on transaction type -->
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="downloadTransactionReceipt()" class="bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span>Download Struk</span>
+                    </button>
+                    <button onclick="shareTransaction()" class="bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                        </svg>
+                        <span>Bagikan</span>
+                    </button>
                 </div>
             </div>
 
@@ -1160,6 +1259,106 @@
                         </svg>
                         <span>Bagikan</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- Forgot Password Screen -->
+            <div id="forgotPasswordScreen" class="hidden p-6 space-y-6 h-full flex flex-col justify-center">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-blue-600 text-3xl">🔑</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800 mb-2">Lupa Password</h1>
+                    <p class="text-gray-600">Masukkan email Anda untuk reset password</p>
+                </div>
+
+                <form onsubmit="handleForgotPassword(event)" class="space-y-4">
+                    <div>
+                        <label for="forgotEmail" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="forgotEmail" placeholder="Masukkan email Anda" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        Kirim Link Reset
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Ingat password Anda? 
+                        <button onclick="showLogin()" class="text-blue-600 font-medium hover:text-blue-700">Kembali ke Login</button>
+                    </p>
+                </div>
+
+                <!-- Instructions -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-800 mb-2">Cara Reset Password:</h3>
+                    <ol class="text-blue-700 text-sm space-y-1">
+                        <li>1. Masukkan email yang terdaftar</li>
+                        <li>2. Klik "Kirim Link Reset"</li>
+                        <li>3. Cek email Anda untuk link reset</li>
+                        <li>4. Klik link dan buat password baru</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Reset Password Screen -->
+            <div id="resetPasswordScreen" class="hidden p-6 space-y-6 h-full flex flex-col justify-center">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-green-600 text-3xl">🔐</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800 mb-2">Reset Password</h1>
+                    <p class="text-gray-600">Buat password baru untuk akun Anda</p>
+                </div>
+
+                <form onsubmit="handleResetPassword(event)" class="space-y-4">
+                    <div>
+                        <label for="resetCode" class="block text-sm font-medium text-gray-700 mb-2">Kode Verifikasi</label>
+                        <input type="text" id="resetCode" placeholder="Masukkan kode 6 digit" maxlength="6" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 text-center text-2xl tracking-widest">
+                    </div>
+
+                    <div>
+                        <label for="newPasswordReset" class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
+                        <div class="relative">
+                            <input type="password" id="newPasswordReset" placeholder="Masukkan password baru" class="w-full border border-gray-300 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <button type="button" onclick="togglePasswordVisibility('newPasswordReset')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <svg id="newPasswordResetEye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="confirmPasswordReset" class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password Baru</label>
+                        <div class="relative">
+                            <input type="password" id="confirmPasswordReset" placeholder="Konfirmasi password baru" class="w-full border border-gray-300 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <button type="button" onclick="togglePasswordVisibility('confirmPasswordReset')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <svg id="confirmPasswordResetEye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                        Reset Password
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Tidak menerima kode? 
+                        <button onclick="resendResetCode()" class="text-green-600 font-medium hover:text-green-700">Kirim Ulang</button>
+                    </p>
+                </div>
+
+                <!-- Demo Code Info -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p class="text-green-800 text-sm font-medium mb-1">Demo Reset Code:</p>
+                    <p class="text-green-700 text-xs">Kode: 123456</p>
+                    <p class="text-green-700 text-xs">Gunakan kode ini untuk demo reset password</p>
                 </div>
             </div>
 
@@ -1710,6 +1909,68 @@
             hideAllScreens();
             document.getElementById('homeScreen').classList.remove('hidden');
             updateActiveTab('homeTab');
+            
+            // Load upcoming appointments on home screen
+            loadUpcomingAppointments();
+        }
+
+        function loadUpcomingAppointments() {
+            const upcomingList = document.getElementById('upcomingAppointmentsList');
+            const today = new Date();
+            
+            // Get upcoming appointments (scheduled and future dates)
+            const upcomingAppointments = appointments.filter(appointment => {
+                const appointmentDate = new Date(appointment.date);
+                return appointmentDate >= today && appointment.status === 'scheduled';
+            }).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 2); // Show only next 2 appointments
+            
+            if (upcomingAppointments.length === 0) {
+                upcomingList.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="text-4xl mb-2">📅</div>
+                        <p class="text-gray-500 text-sm mb-2">Tidak ada janji temu mendatang</p>
+                        <button onclick="showAppointment()" class="text-blue-600 text-sm font-medium hover:text-blue-700">Buat janji temu</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            upcomingList.innerHTML = '';
+            
+            upcomingAppointments.forEach(appointment => {
+                const appointmentItem = document.createElement('div');
+                appointmentItem.className = 'border-l-4 border-blue-400 pl-3 py-2 mb-3 cursor-pointer hover:bg-gray-50 transition-colors';
+                appointmentItem.onclick = () => {
+                    showAppointment();
+                    setTimeout(() => showAppointmentHistory(), 100);
+                };
+                
+                const appointmentDate = new Date(appointment.date);
+                const daysUntil = Math.ceil((appointmentDate - today) / (1000 * 60 * 60 * 24));
+                let dateText = appointmentDate.toLocaleDateString('id-ID');
+                
+                if (daysUntil === 0) {
+                    dateText = 'Hari ini';
+                } else if (daysUntil === 1) {
+                    dateText = 'Besok';
+                } else if (daysUntil <= 7) {
+                    dateText = `${daysUntil} hari lagi`;
+                }
+                
+                appointmentItem.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="font-medium text-sm">${appointment.doctorName}</p>
+                            <p class="text-gray-500 text-xs">${dateText} • ${appointment.time}</p>
+                            <p class="text-blue-600 text-xs">📅 ${appointment.doctorSpecialty}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">Terjadwal</span>
+                        </div>
+                    </div>
+                `;
+                upcomingList.appendChild(appointmentItem);
+            });
         }
 
         function showConsultation() {
@@ -1741,9 +2002,138 @@
             document.getElementById('appointmentScreen').classList.add('fade-in');
             updateActiveTab('appointmentTab');
             
+            // Show create appointment form by default
+            showCreateAppointment();
+            
             // Set minimum date to today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('appointmentDate').min = today;
+        }
+
+        function showCreateAppointment() {
+            document.getElementById('createAppointmentForm').classList.remove('hidden');
+            document.getElementById('appointmentHistoryList').classList.add('hidden');
+            
+            // Update tab buttons
+            document.getElementById('createAppointmentTab').classList.remove('bg-gray-200', 'text-gray-700');
+            document.getElementById('createAppointmentTab').classList.add('bg-green-600', 'text-white');
+            document.getElementById('appointmentHistoryTab').classList.remove('bg-green-600', 'text-white');
+            document.getElementById('appointmentHistoryTab').classList.add('bg-gray-200', 'text-gray-700');
+        }
+
+        function showAppointmentHistory() {
+            document.getElementById('createAppointmentForm').classList.add('hidden');
+            document.getElementById('appointmentHistoryList').classList.remove('hidden');
+            
+            // Update tab buttons
+            document.getElementById('appointmentHistoryTab').classList.remove('bg-gray-200', 'text-gray-700');
+            document.getElementById('appointmentHistoryTab').classList.add('bg-green-600', 'text-white');
+            document.getElementById('createAppointmentTab').classList.remove('bg-green-600', 'text-white');
+            document.getElementById('createAppointmentTab').classList.add('bg-gray-200', 'text-gray-700');
+            
+            // Load appointment history
+            loadAppointmentHistory();
+        }
+
+        function loadAppointmentHistory() {
+            const appointmentList = document.getElementById('appointmentHistoryList');
+            appointmentList.innerHTML = '';
+            
+            if (appointments.length === 0) {
+                appointmentList.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-6xl mb-4">📅</div>
+                        <p class="text-gray-500 mb-2">Belum ada janji temu</p>
+                        <button onclick="showCreateAppointment()" class="text-blue-600 font-medium hover:text-blue-700">Buat janji temu pertama</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort appointments by date (newest first)
+            const sortedAppointments = [...appointments].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedAppointments.forEach(appointment => {
+                const appointmentCard = document.createElement('div');
+                appointmentCard.className = 'bg-white rounded-xl p-4 shadow-md border border-gray-100';
+                
+                const statusColors = {
+                    'scheduled': 'bg-blue-100 text-blue-800',
+                    'completed': 'bg-green-100 text-green-800',
+                    'cancelled': 'bg-red-100 text-red-800'
+                };
+                
+                const statusLabels = {
+                    'scheduled': 'Terjadwal',
+                    'completed': 'Selesai',
+                    'cancelled': 'Dibatalkan'
+                };
+                
+                const appointmentDate = new Date(appointment.date);
+                const today = new Date();
+                const isUpcoming = appointmentDate >= today && appointment.status === 'scheduled';
+                const isPast = appointmentDate < today && appointment.status === 'scheduled';
+                
+                // Auto-update past appointments to completed
+                if (isPast) {
+                    appointment.status = 'completed';
+                    localStorage.setItem('sehatdesa_appointments', JSON.stringify(appointments));
+                }
+                
+                appointmentCard.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 text-lg">${appointment.doctorAvatar}</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="font-semibold text-gray-800">${appointment.doctorName}</h3>
+                                <span class="${statusColors[appointment.status]} px-2 py-1 rounded-full text-xs font-medium">${statusLabels[appointment.status]}</span>
+                            </div>
+                            <p class="text-gray-500 text-sm">${appointment.doctorSpecialty}</p>
+                            <p class="text-gray-700 text-sm mt-1">${appointment.complaint}</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <div class="flex items-center space-x-4">
+                                    <p class="text-gray-600 text-sm font-medium">${appointmentDate.toLocaleDateString('id-ID')} • ${appointment.time}</p>
+                                </div>
+                                <p class="text-green-600 font-medium text-sm">Rp ${appointment.cost.toLocaleString('id-ID')}</p>
+                            </div>
+                            ${isUpcoming ? `
+                                <div class="flex space-x-2 mt-3">
+                                    <button onclick="rescheduleAppointment(${appointment.id})" class="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors">
+                                        Reschedule
+                                    </button>
+                                    <button onclick="cancelAppointment(${appointment.id})" class="flex-1 bg-red-50 text-red-600 py-2 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors">
+                                        Batalkan
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                appointmentList.appendChild(appointmentCard);
+            });
+        }
+
+        function rescheduleAppointment(appointmentId) {
+            const appointment = appointments.find(a => a.id === appointmentId);
+            if (!appointment) return;
+            
+            showModal('Reschedule Janji Temu', `Untuk mengubah jadwal janji temu dengan ${appointment.doctorName}, silakan hubungi customer service di 0804-1-SEHAT (73428).`);
+        }
+
+        function cancelAppointment(appointmentId) {
+            const appointment = appointments.find(a => a.id === appointmentId);
+            if (!appointment) return;
+            
+            // Update appointment status
+            appointment.status = 'cancelled';
+            localStorage.setItem('sehatdesa_appointments', JSON.stringify(appointments));
+            
+            showModal('Janji Temu Dibatalkan', `Janji temu dengan ${appointment.doctorName} pada ${new Date(appointment.date).toLocaleDateString('id-ID')} telah dibatalkan.`);
+            
+            // Refresh the list
+            loadAppointmentHistory();
         }
 
         function showHealthRecord() {
@@ -1820,7 +2210,7 @@
         }
 
         function hideAllScreens() {
-            const screens = ['homeScreen', 'consultationScreen', 'callScreen', 'videoCallScreen', 'chatScreen', 'appointmentScreen', 'healthRecordScreen', 'pharmacyScreen', 'cartScreen', 'emergencyScreen', 'loginScreen', 'registerScreen', 'profileScreen', 'editProfileScreen', 'securityScreen', 'transactionScreen', 'helpScreen', 'consultationHistoryScreen', 'consultationDetailScreen'];
+            const screens = ['homeScreen', 'consultationScreen', 'callScreen', 'videoCallScreen', 'chatScreen', 'appointmentScreen', 'healthRecordScreen', 'pharmacyScreen', 'cartScreen', 'emergencyScreen', 'loginScreen', 'registerScreen', 'profileScreen', 'editProfileScreen', 'securityScreen', 'transactionScreen', 'transactionDetailScreen', 'helpScreen', 'consultationHistoryScreen', 'consultationDetailScreen', 'forgotPasswordScreen', 'resetPasswordScreen'];
             screens.forEach(screen => {
                 document.getElementById(screen).classList.add('hidden');
                 document.getElementById(screen).classList.remove('fade-in');
@@ -1990,6 +2380,33 @@
             if (cart.length === 0) return;
             
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Create transaction record
+            const newTransaction = {
+                id: Date.now(),
+                type: 'medicine',
+                description: cart.length === 1 ? 
+                    `${cart[0].name} x${cart[0].quantity}` : 
+                    `${cart[0].name} + ${cart.length - 1} item lainnya`,
+                amount: total,
+                date: new Date().toISOString().split('T')[0],
+                status: 'completed',
+                icon: cart[0].image,
+                details: {
+                    items: cart.map(item => ({
+                        name: item.name,
+                        quantity: item.quantity,
+                        price: item.price
+                    })),
+                    deliveryAddress: currentUser?.address || 'Jl. Mawar No. 123, Desa Makmur',
+                    deliveryStatus: 'delivered'
+                }
+            };
+            
+            // Add to transactions
+            transactions.unshift(newTransaction);
+            localStorage.setItem('sehatdesa_transactions', JSON.stringify(transactions));
+            
             showModal('Pesanan Berhasil!', `Pesanan Anda senilai Rp ${total.toLocaleString('id-ID')} sedang diproses. Obat akan dikirim dalam 1-2 hari kerja.`);
             
             // Clear cart
@@ -2099,6 +2516,28 @@
             
             const duration = Math.floor(videoCallDuration / 60);
             const cost = duration * 75000; // Rp 75.000 per menit
+            
+            // Create video consultation transaction
+            if (currentVideoCallDoctor && duration > 0) {
+                const newTransaction = {
+                    id: Date.now(),
+                    type: 'consultation',
+                    description: `Video Call - ${currentVideoCallDoctor.name}`,
+                    amount: cost,
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'completed',
+                    icon: '📹',
+                    details: {
+                        doctorName: currentVideoCallDoctor.name,
+                        consultationType: 'video',
+                        duration: `${duration} menit`,
+                        diagnosis: 'Konsultasi umum via video call'
+                    }
+                };
+                
+                transactions.unshift(newTransaction);
+                localStorage.setItem('sehatdesa_transactions', JSON.stringify(transactions));
+            }
             
             showModal('Video Call Selesai', 
                 `Durasi: ${duration} menit\nBiaya: Rp ${cost.toLocaleString('id-ID')}\nTerima kasih telah menggunakan layanan video konsultasi.`);
@@ -2279,6 +2718,28 @@
             const duration = Math.floor(callDuration / 60);
             const cost = duration * 50000; // Rp 50.000 per menit
             
+            // Create consultation transaction
+            if (currentCallDoctor && duration > 0) {
+                const newTransaction = {
+                    id: Date.now(),
+                    type: 'consultation',
+                    description: `Konsultasi Call - ${currentCallDoctor.name}`,
+                    amount: cost,
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'completed',
+                    icon: '📞',
+                    details: {
+                        doctorName: currentCallDoctor.name,
+                        consultationType: 'call',
+                        duration: `${duration} menit`,
+                        diagnosis: 'Konsultasi umum via telepon'
+                    }
+                };
+                
+                transactions.unshift(newTransaction);
+                localStorage.setItem('sehatdesa_transactions', JSON.stringify(transactions));
+            }
+            
             showModal('Panggilan Selesai', 
                 `Durasi: ${duration} menit\nBiaya: Rp ${cost.toLocaleString('id-ID')}\nTerima kasih telah menggunakan layanan konsultasi telepon.`);
             
@@ -2384,6 +2845,52 @@
             }
         });
 
+        // Appointment data
+        let appointments = JSON.parse(localStorage.getItem('sehatdesa_appointments') || '[]');
+        
+        // Initialize with sample appointments if empty
+        if (appointments.length === 0) {
+            appointments = [
+                {
+                    id: 1,
+                    doctorName: 'Dr. Ahmad Wijaya',
+                    doctorSpecialty: 'Dokter Umum',
+                    doctorAvatar: '👨‍⚕️',
+                    date: '2024-12-20',
+                    time: '09:00',
+                    complaint: 'Kontrol rutin tekanan darah',
+                    status: 'scheduled',
+                    createdAt: '2024-12-15',
+                    cost: 100000
+                },
+                {
+                    id: 2,
+                    doctorName: 'Dr. Sari Indah',
+                    doctorSpecialty: 'Dokter Anak',
+                    doctorAvatar: '👩‍⚕️',
+                    date: '2024-12-18',
+                    time: '14:30',
+                    complaint: 'Imunisasi anak',
+                    status: 'completed',
+                    createdAt: '2024-12-10',
+                    cost: 150000
+                },
+                {
+                    id: 3,
+                    doctorName: 'Dr. Budi Santoso',
+                    doctorSpecialty: 'Dokter Gigi',
+                    doctorAvatar: '👨‍⚕️',
+                    date: '2024-12-25',
+                    time: '10:00',
+                    complaint: 'Pembersihan karang gigi',
+                    status: 'scheduled',
+                    createdAt: '2024-12-14',
+                    cost: 200000
+                }
+            ];
+            localStorage.setItem('sehatdesa_appointments', JSON.stringify(appointments));
+        }
+
         // Appointment functions
         function createAppointment(event) {
             event.preventDefault();
@@ -2398,6 +2905,44 @@
                 return;
             }
             
+            const cost = getDoctorCost(doctor);
+            
+            // Create new appointment
+            const newAppointment = {
+                id: Date.now(),
+                doctorName: doctor,
+                doctorSpecialty: getDoctorSpecialty(doctor),
+                doctorAvatar: getDoctorAvatar(doctor),
+                date: date,
+                time: time,
+                complaint: complaint,
+                status: 'scheduled',
+                createdAt: new Date().toISOString().split('T')[0],
+                cost: cost
+            };
+            
+            appointments.push(newAppointment);
+            localStorage.setItem('sehatdesa_appointments', JSON.stringify(appointments));
+            
+            // Create appointment transaction
+            const newTransaction = {
+                id: Date.now() + 1, // Ensure unique ID
+                type: 'appointment',
+                description: `Janji Temu - ${doctor}`,
+                amount: cost,
+                date: new Date().toISOString().split('T')[0],
+                status: 'completed',
+                icon: '📅',
+                details: {
+                    doctorName: doctor,
+                    appointmentType: getDoctorSpecialty(doctor),
+                    complaint: complaint
+                }
+            };
+            
+            transactions.unshift(newTransaction);
+            localStorage.setItem('sehatdesa_transactions', JSON.stringify(transactions));
+            
             showModal('Janji Temu Berhasil!', `Janji temu dengan ${doctor} pada ${new Date(date).toLocaleDateString('id-ID')} pukul ${time} telah dibuat.`);
             
             // Reset form
@@ -2405,6 +2950,33 @@
             document.getElementById('appointmentDate').value = '';
             document.getElementById('appointmentTime').value = '';
             document.getElementById('appointmentComplaint').value = '';
+        }
+
+        function getDoctorSpecialty(doctorName) {
+            const specialties = {
+                'Dr. Ahmad Wijaya': 'Dokter Umum',
+                'Dr. Sari Indah': 'Dokter Anak',
+                'Dr. Budi Santoso': 'Dokter Gigi'
+            };
+            return specialties[doctorName] || 'Dokter Umum';
+        }
+
+        function getDoctorAvatar(doctorName) {
+            const avatars = {
+                'Dr. Ahmad Wijaya': '👨‍⚕️',
+                'Dr. Sari Indah': '👩‍⚕️',
+                'Dr. Budi Santoso': '👨‍⚕️'
+            };
+            return avatars[doctorName] || '👨‍⚕️';
+        }
+
+        function getDoctorCost(doctorName) {
+            const costs = {
+                'Dr. Ahmad Wijaya': 100000,
+                'Dr. Sari Indah': 150000,
+                'Dr. Budi Santoso': 200000
+            };
+            return costs[doctorName] || 100000;
         }
 
         // Emergency functions
@@ -2758,12 +3330,23 @@
             const profileInitials = document.getElementById('profileInitials');
             const profileImageContainer = document.getElementById('profileImageContainer');
             
+            // Also update header profile photo
+            const headerProfileImage = document.getElementById('headerProfileImage');
+            const headerProfileContent = document.getElementById('headerProfileContent');
+            const headerProfileBtn = document.getElementById('profileBtn');
+            
             if (currentUser.photoType === 'upload' && currentUser.photoUrl) {
                 // Show uploaded photo
                 profileImage.src = currentUser.photoUrl;
                 profileImage.classList.remove('hidden');
                 profileInitials.classList.add('hidden');
                 profileImageContainer.style.background = 'white';
+                
+                // Update header
+                headerProfileImage.src = currentUser.photoUrl;
+                headerProfileImage.classList.remove('hidden');
+                headerProfileContent.classList.add('hidden');
+                headerProfileBtn.style.background = 'white';
             } else if (currentUser.photoType === 'avatar' && currentUser.avatar) {
                 // Show avatar emoji
                 profileImage.classList.add('hidden');
@@ -2771,6 +3354,13 @@
                 profileInitials.textContent = currentUser.avatar;
                 profileInitials.style.fontSize = '2rem';
                 profileImageContainer.style.background = 'white';
+                
+                // Update header
+                headerProfileImage.classList.add('hidden');
+                headerProfileContent.classList.remove('hidden');
+                headerProfileContent.textContent = currentUser.avatar;
+                headerProfileContent.style.fontSize = '1rem';
+                headerProfileBtn.style.background = 'white';
             } else {
                 // Show initials
                 profileImage.classList.add('hidden');
@@ -2778,6 +3368,14 @@
                 profileInitials.textContent = currentUser.initials;
                 profileInitials.style.fontSize = '1.5rem';
                 profileImageContainer.style.background = 'white';
+                
+                // Update header
+                headerProfileImage.classList.add('hidden');
+                headerProfileContent.classList.remove('hidden');
+                headerProfileContent.textContent = currentUser.initials;
+                headerProfileContent.style.fontSize = '0.875rem';
+                headerProfileContent.className = 'text-green-600 text-sm font-semibold';
+                headerProfileBtn.style.background = 'white';
             }
         }
 
@@ -2958,16 +3556,138 @@
         }
 
         // Transaction History functions
-        const transactions = [
-            { id: 1, type: 'consultation', description: 'Konsultasi Chat - Dr. Ahmad Wijaya', amount: 25000, date: '2025-12-15', status: 'completed', icon: '💬' },
-            { id: 2, type: 'medicine', description: 'Paracetamol 500mg x2', amount: 30000, date: '2025-12-14', status: 'completed', icon: '💊' },
-            { id: 3, type: 'consultation', description: 'Video Call - Dr. Sari Indah', amount: 50000, date: '2025-12-12', status: 'completed', icon: '📞' },
-            { id: 4, type: 'medicine', description: 'Vitamin C 1000mg x1', amount: 35000, date: '2025-12-10', status: 'completed', icon: '🟡' },
-            { id: 5, type: 'appointment', description: 'Janji Temu - Dr. Budi Santoso', amount: 75000, date: '2025-12-08', status: 'completed', icon: '📅' },
-            { id: 6, type: 'medicine', description: 'Betadine 15ml x1', amount: 18000, date: '2025-12-05', status: 'completed', icon: '🩹' },
-            { id: 7, type: 'consultation', description: 'Konsultasi Chat - Dr. Ahmad Wijaya', amount: 25000, date: '2025-12-03', status: 'completed', icon: '💬' },
-            { id: 8, type: 'medicine', description: 'Tolak Angin x3', amount: 24000, date: '2025-12-01', status: 'completed', icon: '🌿' }
-        ];
+        let transactions = JSON.parse(localStorage.getItem('sehatdesa_transactions') || '[]');
+        
+        // Initialize with sample transactions if empty
+        if (transactions.length === 0) {
+            transactions = [
+                { 
+                    id: 1, 
+                    type: 'consultation', 
+                    description: 'Konsultasi Chat - Dr. Ahmad Wijaya', 
+                    amount: 25000, 
+                    date: '2024-12-15', 
+                    status: 'completed', 
+                    icon: '💬',
+                    details: {
+                        doctorName: 'Dr. Ahmad Wijaya',
+                        consultationType: 'chat',
+                        duration: '25 menit',
+                        diagnosis: 'Infeksi Saluran Pernapasan Atas (ISPA)'
+                    }
+                },
+                { 
+                    id: 2, 
+                    type: 'medicine', 
+                    description: 'Paracetamol 500mg x2', 
+                    amount: 30000, 
+                    date: '2024-12-14', 
+                    status: 'completed', 
+                    icon: '💊',
+                    details: {
+                        items: [
+                            { name: 'Paracetamol 500mg', quantity: 2, price: 15000 }
+                        ],
+                        deliveryAddress: 'Jl. Mawar No. 123, Desa Makmur',
+                        deliveryStatus: 'delivered'
+                    }
+                },
+                { 
+                    id: 3, 
+                    type: 'consultation', 
+                    description: 'Video Call - Dr. Sari Indah', 
+                    amount: 75000, 
+                    date: '2024-12-12', 
+                    status: 'completed', 
+                    icon: '📹',
+                    details: {
+                        doctorName: 'Dr. Sari Indah',
+                        consultationType: 'video',
+                        duration: '30 menit',
+                        diagnosis: 'Gastroenteritis Akut'
+                    }
+                },
+                { 
+                    id: 4, 
+                    type: 'medicine', 
+                    description: 'Vitamin C 1000mg x1', 
+                    amount: 35000, 
+                    date: '2024-12-10', 
+                    status: 'completed', 
+                    icon: '🟡',
+                    details: {
+                        items: [
+                            { name: 'Vitamin C 1000mg', quantity: 1, price: 35000 }
+                        ],
+                        deliveryAddress: 'Jl. Mawar No. 123, Desa Makmur',
+                        deliveryStatus: 'delivered'
+                    }
+                },
+                { 
+                    id: 5, 
+                    type: 'appointment', 
+                    description: 'Janji Temu - Dr. Budi Santoso', 
+                    amount: 200000, 
+                    date: '2024-12-08', 
+                    status: 'completed', 
+                    icon: '📅',
+                    details: {
+                        doctorName: 'Dr. Budi Santoso',
+                        appointmentType: 'Konsultasi Gigi',
+                        complaint: 'Sakit gigi geraham kiri'
+                    }
+                },
+                { 
+                    id: 6, 
+                    type: 'medicine', 
+                    description: 'Betadine 15ml x1 + Hansaplast Strip x1', 
+                    amount: 30000, 
+                    date: '2024-12-05', 
+                    status: 'completed', 
+                    icon: '🩹',
+                    details: {
+                        items: [
+                            { name: 'Betadine 15ml', quantity: 1, price: 18000 },
+                            { name: 'Hansaplast Strip', quantity: 1, price: 12000 }
+                        ],
+                        deliveryAddress: 'Jl. Mawar No. 123, Desa Makmur',
+                        deliveryStatus: 'delivered'
+                    }
+                },
+                { 
+                    id: 7, 
+                    type: 'consultation', 
+                    description: 'Konsultasi Call - Dr. Ahmad Wijaya', 
+                    amount: 50000, 
+                    date: '2024-12-03', 
+                    status: 'completed', 
+                    icon: '📞',
+                    details: {
+                        doctorName: 'Dr. Ahmad Wijaya',
+                        consultationType: 'call',
+                        duration: '15 menit',
+                        diagnosis: 'Tension Headache'
+                    }
+                },
+                { 
+                    id: 8, 
+                    type: 'medicine', 
+                    description: 'Tolak Angin x3', 
+                    amount: 24000, 
+                    date: '2024-12-01', 
+                    status: 'completed', 
+                    icon: '🌿',
+                    details: {
+                        items: [
+                            { name: 'Tolak Angin', quantity: 3, price: 8000 }
+                        ],
+                        deliveryAddress: 'Jl. Mawar No. 123, Desa Makmur',
+                        deliveryStatus: 'delivered'
+                    }
+                }
+            ];
+            localStorage.setItem('sehatdesa_transactions', JSON.stringify(transactions));
+        }
 
         let currentTransactionFilter = 'all';
 
@@ -3000,9 +3720,13 @@
             
             transactionList.innerHTML = '';
             
+            // Update monthly summary
+            updateMonthlySummary();
+            
             filteredTransactions.forEach(transaction => {
                 const transactionCard = document.createElement('div');
-                transactionCard.className = 'bg-white rounded-xl p-4 shadow-md border border-gray-100';
+                transactionCard.className = 'bg-white rounded-xl p-4 shadow-md border border-gray-100 cursor-pointer hover:shadow-lg transition-shadow';
+                transactionCard.onclick = () => showTransactionDetail(transaction.id);
                 
                 const statusColor = transaction.status === 'completed' ? 'text-green-600' : 'text-yellow-600';
                 const statusText = transaction.status === 'completed' ? 'Selesai' : 'Pending';
@@ -3019,11 +3743,259 @@
                         </div>
                         <div class="text-right">
                             <p class="font-bold text-gray-800">Rp ${transaction.amount.toLocaleString('id-ID')}</p>
+                            <svg class="w-4 h-4 text-gray-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
                         </div>
                     </div>
                 `;
                 transactionList.appendChild(transactionCard);
             });
+        }
+
+        function updateMonthlySummary() {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            const monthlyTransactions = transactions.filter(t => {
+                const transactionDate = new Date(t.date);
+                return transactionDate.getMonth() === currentMonth && 
+                       transactionDate.getFullYear() === currentYear;
+            });
+            
+            const monthlyTotal = monthlyTransactions.reduce((sum, t) => sum + t.amount, 0);
+            const monthlyCount = monthlyTransactions.length;
+            
+            document.getElementById('monthlyTotal').textContent = `Rp ${monthlyTotal.toLocaleString('id-ID')}`;
+            document.getElementById('monthlyCount').textContent = monthlyCount;
+        }
+
+        let selectedTransaction = null;
+
+        function showTransactionDetail(transactionId) {
+            selectedTransaction = transactions.find(t => t.id === transactionId);
+            if (!selectedTransaction) return;
+            
+            hideAllScreens();
+            document.getElementById('transactionDetailScreen').classList.remove('hidden');
+            document.getElementById('transactionDetailScreen').classList.add('fade-in');
+            
+            loadTransactionDetail();
+        }
+
+        function loadTransactionDetail() {
+            if (!selectedTransaction) return;
+            
+            const t = selectedTransaction;
+            
+            // Basic info
+            document.getElementById('transactionDetailIcon').textContent = t.icon;
+            document.getElementById('transactionDetailTitle').textContent = t.description;
+            document.getElementById('transactionDetailDate').textContent = new Date(t.date).toLocaleDateString('id-ID');
+            document.getElementById('transactionDetailAmount').textContent = `Rp ${t.amount.toLocaleString('id-ID')}`;
+            document.getElementById('transactionDetailId').textContent = `#TXN${t.id.toString().padStart(3, '0')}`;
+            document.getElementById('transactionDetailPayment').textContent = 'Transfer Bank';
+            
+            const statusColor = t.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+            const statusText = t.status === 'completed' ? 'Selesai' : 'Pending';
+            
+            const statusElement = document.getElementById('transactionDetailStatus');
+            statusElement.className = `${statusColor} px-2 py-1 rounded-full text-xs font-medium`;
+            statusElement.textContent = statusText;
+            
+            // Load specific content based on transaction type
+            loadTransactionTypeContent(t);
+        }
+
+        function loadTransactionTypeContent(transaction) {
+            const contentContainer = document.getElementById('transactionDetailContent');
+            contentContainer.innerHTML = '';
+            
+            if (transaction.type === 'medicine') {
+                // Medicine purchase details
+                const medicineContent = document.createElement('div');
+                medicineContent.className = 'space-y-4';
+                
+                medicineContent.innerHTML = `
+                    <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+                        <h3 class="font-semibold text-gray-800 mb-3">Detail Pembelian Obat</h3>
+                        <div class="space-y-3" id="medicineItems">
+                            <!-- Medicine items will be populated -->
+                        </div>
+                        <div class="border-t border-gray-200 pt-3 mt-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Total:</span>
+                                <span class="text-lg font-bold text-green-600">Rp ${transaction.amount.toLocaleString('id-ID')}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+                        <h3 class="font-semibold text-gray-800 mb-3">Informasi Pengiriman</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Alamat Pengiriman:</span>
+                                <span class="font-medium text-right">${transaction.details.deliveryAddress}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Status Pengiriman:</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                                    ${transaction.details.deliveryStatus === 'delivered' ? '✓ Terkirim' : 'Dalam Perjalanan'}
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Estimasi Tiba:</span>
+                                <span class="font-medium">1-2 Hari Kerja</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                contentContainer.appendChild(medicineContent);
+                
+                // Populate medicine items
+                const medicineItemsContainer = document.getElementById('medicineItems');
+                transaction.details.items.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+                    itemElement.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                💊
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm">${item.name}</p>
+                                <p class="text-gray-500 text-xs">Qty: ${item.quantity}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium">Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</p>
+                            <p class="text-gray-500 text-xs">@Rp ${item.price.toLocaleString('id-ID')}</p>
+                        </div>
+                    `;
+                    medicineItemsContainer.appendChild(itemElement);
+                });
+                
+            } else if (transaction.type === 'consultation') {
+                // Consultation details
+                const consultationContent = document.createElement('div');
+                consultationContent.className = 'space-y-4';
+                
+                consultationContent.innerHTML = `
+                    <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+                        <h3 class="font-semibold text-gray-800 mb-3">Detail Konsultasi</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-600 text-lg">👨‍⚕️</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">${transaction.details.doctorName}</h4>
+                                    <p class="text-gray-500 text-sm">Dokter Umum</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Jenis Konsultasi</p>
+                                    <p class="font-medium capitalize">${transaction.details.consultationType}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Durasi</p>
+                                    <p class="font-medium">${transaction.details.duration}</p>
+                                </div>
+                                <div class="col-span-2">
+                                    <p class="text-gray-500 text-sm">Diagnosis</p>
+                                    <p class="font-medium">${transaction.details.diagnosis}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+                        <h3 class="font-semibold text-gray-800 mb-3">Rincian Biaya</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Biaya Konsultasi:</span>
+                                <span class="font-medium">Rp ${transaction.amount.toLocaleString('id-ID')}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Biaya Admin:</span>
+                                <span class="font-medium">Rp 0</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-2 mt-2">
+                                <div class="flex justify-between">
+                                    <span class="font-semibold">Total:</span>
+                                    <span class="text-lg font-bold text-green-600">Rp ${transaction.amount.toLocaleString('id-ID')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                contentContainer.appendChild(consultationContent);
+                
+            } else if (transaction.type === 'appointment') {
+                // Appointment details
+                const appointmentContent = document.createElement('div');
+                appointmentContent.className = 'space-y-4';
+                
+                appointmentContent.innerHTML = `
+                    <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+                        <h3 class="font-semibold text-gray-800 mb-3">Detail Janji Temu</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-600 text-lg">👨‍⚕️</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">${transaction.details.doctorName}</h4>
+                                    <p class="text-gray-500 text-sm">${transaction.details.appointmentType}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 rounded-lg p-3">
+                                <p class="text-gray-600 text-sm">Keluhan:</p>
+                                <p class="font-medium">${transaction.details.complaint}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+                        <h3 class="font-semibold text-gray-800 mb-3">Rincian Biaya</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Biaya Konsultasi:</span>
+                                <span class="font-medium">Rp ${transaction.amount.toLocaleString('id-ID')}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Biaya Admin:</span>
+                                <span class="font-medium">Rp 0</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-2 mt-2">
+                                <div class="flex justify-between">
+                                    <span class="font-semibold">Total:</span>
+                                    <span class="text-lg font-bold text-green-600">Rp ${transaction.amount.toLocaleString('id-ID')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                contentContainer.appendChild(appointmentContent);
+            }
+        }
+
+        function downloadTransactionReceipt() {
+            if (!selectedTransaction) return;
+            
+            showModal('Download Struk', 'Struk transaksi sedang dipersiapkan dan akan diunduh dalam format PDF.');
+        }
+
+        function shareTransaction() {
+            if (!selectedTransaction) return;
+            
+            showModal('Bagikan Transaksi', 'Link untuk berbagi detail transaksi telah disalin ke clipboard.');
         }
 
         // Help functions
@@ -3312,6 +4284,123 @@
             showModal('Bagikan Konsultasi', 'Link untuk berbagi hasil konsultasi telah disalin ke clipboard. Anda dapat membagikannya kepada dokter lain atau keluarga.');
         }
 
+        // Forgot Password functions
+        let resetEmail = '';
+        let resetCodeSent = false;
+
+        function showForgotPassword() {
+            hideAllScreens();
+            document.getElementById('forgotPasswordScreen').classList.remove('hidden');
+            document.getElementById('forgotPasswordScreen').classList.add('fade-in');
+        }
+
+        function showResetPassword() {
+            hideAllScreens();
+            document.getElementById('resetPasswordScreen').classList.remove('hidden');
+            document.getElementById('resetPasswordScreen').classList.add('fade-in');
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value.trim();
+            
+            if (!email) {
+                showModal('Peringatan', 'Mohon masukkan email Anda');
+                return;
+            }
+            
+            // Check if email exists in database
+            const user = userDatabase.find(u => u.email === email);
+            
+            if (!user) {
+                showModal('Email Tidak Ditemukan', 'Email ini tidak terdaftar dalam sistem. Pastikan Anda memasukkan email yang benar atau daftar akun baru.');
+                return;
+            }
+            
+            // Store email for reset process
+            resetEmail = email;
+            resetCodeSent = true;
+            
+            showModal('Link Reset Dikirim!', `Link reset password telah dikirim ke ${email}. Silakan cek email Anda dan ikuti instruksi untuk reset password.`);
+            
+            // Clear form
+            document.getElementById('forgotEmail').value = '';
+            
+            // Simulate email sent, then show reset screen
+            setTimeout(() => {
+                closeModal();
+                showResetPassword();
+            }, 2000);
+        }
+
+        function handleResetPassword(event) {
+            event.preventDefault();
+            
+            const code = document.getElementById('resetCode').value.trim();
+            const newPassword = document.getElementById('newPasswordReset').value;
+            const confirmPassword = document.getElementById('confirmPasswordReset').value;
+            
+            if (!code || !newPassword || !confirmPassword) {
+                showModal('Peringatan', 'Mohon lengkapi semua field');
+                return;
+            }
+            
+            // Verify reset code (demo code: 123456)
+            if (code !== '123456') {
+                showModal('Kode Salah', 'Kode verifikasi yang Anda masukkan salah. Silakan cek kembali email Anda atau minta kirim ulang kode.');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showModal('Password Tidak Sama', 'Password baru dan konfirmasi password tidak sama');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showModal('Password Terlalu Pendek', 'Password minimal 6 karakter');
+                return;
+            }
+            
+            if (!resetEmail) {
+                showModal('Error', 'Terjadi kesalahan. Silakan mulai ulang proses reset password.');
+                return;
+            }
+            
+            // Find user and update password
+            const userIndex = userDatabase.findIndex(u => u.email === resetEmail);
+            if (userIndex !== -1) {
+                userDatabase[userIndex].password = newPassword;
+                localStorage.setItem('sehatdesa_users', JSON.stringify(userDatabase));
+                
+                showModal('Password Berhasil Direset!', 'Password Anda telah berhasil diperbarui. Silakan login dengan password baru.');
+                
+                // Clear form and reset variables
+                document.getElementById('resetCode').value = '';
+                document.getElementById('newPasswordReset').value = '';
+                document.getElementById('confirmPasswordReset').value = '';
+                resetEmail = '';
+                resetCodeSent = false;
+                
+                // Redirect to login after success
+                setTimeout(() => {
+                    closeModal();
+                    showLogin();
+                }, 2000);
+            } else {
+                showModal('Error', 'Terjadi kesalahan. Silakan coba lagi.');
+            }
+        }
+
+        function resendResetCode() {
+            if (!resetEmail) {
+                showModal('Error', 'Tidak ada email yang terdaftar untuk reset. Silakan mulai ulang proses reset password.');
+                return;
+            }
+            
+            showModal('Kode Dikirim Ulang', `Kode verifikasi baru telah dikirim ke ${resetEmail}. Silakan cek email Anda.`);
+        }
+
         // Search functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Always check login state first
@@ -3336,5 +4425,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9957db3c2015ce46',t:'MTc2MTYyNzQ4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9958b2f57571a452',t:'MTc2MTYzNjMyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
